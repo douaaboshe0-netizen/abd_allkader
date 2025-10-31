@@ -1,124 +1,119 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/calendar_controller.dart';
+import 'package:hijri/hijri_calendar.dart';
 
-class CalendarPage extends StatelessWidget {
+class CalendarController extends GetxController {
+  var currentDate = HijriCalendar.now().obs;
+  var daysInMonth = 30.obs;
+  var offsetDays = 0.obs;
+
+  final arabicMonths = {
+    1: "محرم",
+    2: "صفر",
+    3: "ربيع الأول",
+    4: "ربيع الآخر",
+    5: "جمادى الأولى",
+    6: "جمادى الآخرة",
+    7: "رجب",
+    8: "شعبان",
+    9: "رمضان",
+    10: "شوال",
+    11: "ذو القعدة",
+    12: "ذو الحجة",
+  };
+
+  final imageNames = {
+    1: "images/muharm.jpg",
+    2: "images/safar.jpg",
+    3: "images/rabee1.jpg",
+    4: "images/rabee2.jpg",
+    5: "images/jumada1.jpg",
+    6: "images/jumada2.jpg",
+    7: "images/rajab.jpg",
+    8: "images/shaban.jpg",
+    9: "images/ramadan.jpg",
+    10: "images/shawal.jpg",
+    11: "images/zukaade.jpg",
+    12: "images/zualhje.jpg",
+  };
+  final hadiths = {
+    1: '''عن أبي هريرة رضي اللّه عنه قال:قال رسولُ اللهِ ﷺ:\n«أفضلُ الصيامِ بعدَ رمضانَ شهرُ اللهِ المُحرَّمُ، وأفضلُ الصلاةِ بعدَ الفريضةِ صلاةُ الليلِ».\n رواه مسلم📘''',
+
+    2: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«لا عَدْوَى، ولا طِيَرَةَ، ويُعْجِبُني الفألُ». قالوا: وما الفألُ؟ قالَ: «الكَلِمَةُ الطَّيِّبَةُ».\n متفق عليه📘''',
+
+    3: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«مَن صلَّى علَيَّ واحدةً، صلَّى اللهُ عليهِ بها عشرًا».\n رواه مسلم📘''',
+
+    4: '''عن عبدِ اللهِ بنِ مسعودٍ رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«كأنِّي أنظرُ إلى رسولِ اللهِ ﷺ يَحْكِي نبيًّا منَ الأنبياءِ، ضَرَبَهُ قومُهُ فأدمَوهُ، وهو يمسَحُ الدمَ عن وجهِه، ويقولُ: اللهمَّ اغفِرْ لقومي فإنهم لا يعلمونَ».\n متفق عليه📘''',
+
+    5: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«مَن كانَ يُؤمِنُ باللهِ واليومِ الآخرِ، فليقلْ خيرًا أو ليصمُتْ، ومَن كانَ يُؤمِنُ باللهِ واليومِ الآخرِ، فليُكرِمْ جارَهُ، ومَن كانَ يُؤمِنُ باللهِ واليومِ الآخرِ، فليُكرِمْ ضيفَهُ».\n متفق عليه📘''',
+
+    6: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«كلُّ سُلامى من الناسِ عليهِ صدقةٌ، كلُّ يومٍ تطلعُ فيهِ الشمسُ: تعدلُ بينَ اثنينِ صدقةٌ، وتعينُ الرجلَ في دابَّتِهِ فتحملُهُ عليها، أو ترفعُ لهُ عليها متاعَهُ صدقةٌ، والكلمةُ الطيبةُ صدقةٌ، وبكلِّ خطوةٍ تمشيها إلى الصلاةِ صدقةٌ، وتميطُ الأذى عنِ الطريقِ صدقةٌ».\n متفق عليه📘''',
+
+    7: '''عن أبي بكرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«إنَّ الزمانَ قدِ استدارَ كهيئتِه يومَ خلقَ اللهُ السمواتِ والأرضَ، السنةُ اثنا عشرَ شهرًا، منها أربعةٌ حُرُمٌ: ثلاثٌ متوالياتٌ، ذو القعدةِ، وذو الحجةِ، والمحرَّمُ، ورجبُ مُضَرَ الذي بين جمادى وشعبانَ».\n متفق عليه📘''',
+
+    8: '''عن عائشةَ رضيَ اللّهُ عنها قالت:\n«لَمْ يَكُنِ النَّبِيُّ ﷺ يَصُومُ شَهْرًا أَكْثَرَ مِنْ شَعْبَانَ، فَإِنَّهُ كَانَ يَصُومُ شَعْبَانَ كُلَّهُ، وَقَالَ: خُذُوا مِنَ الْعَمَلِ مَا تُطِيقُونَ، فَإِنَّ اللَّهَ لَا يَمَلُّ حَتَّى تَمَلُّوا، وَأَفْضَلُ الْعَمَلِ مَا دَاوَمَ عَلَيْهِ صَاحِبُهُ وَإِنْ قَلَّ».\n متفق عليه📘''',
+
+    9: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«إذا جاء رمضانُ، فُتِّحَتْ أبوابُ الجنةِ، وغُلِّقَتْ أبوابُ النارِ، وصُفِّدَتِ الشياطينُ».\n متفق عليه📘''',
+
+    10: '''عن أبي أيوب الأنصاري رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«مَن صام رمضانَ، ثم أتبَعَهُ ستًّا من شوَّالَ، كان كصيامِ الدَّهرِ».\n رواه مسلم📘''',
+
+    11: '''عن أبي هريرة رضي اللّه عنه قال:\nقال رسولُ اللهِ ﷺ:\n«ما نقصَتْ صدقةٌ من مالٍ، وما زادَ اللهُ عبدًا بعفوٍ إلا عزًّا، وما تواضَعَ أحدٌ للهِ إلا رفعَهُ اللهُ».\n رواه مسلم📘''',
+
+    12: '''عن عبدِ اللهِ بنِ عباسٍ رضي اللّه عنهما قال:\nقال رسولُ اللهِ ﷺ:\n«ما من أيامٍ العملُ الصالحُ فيها أحبُّ إلى اللهِ من هذه الأيامِ العشرِ». قالوا: يا رسولَ اللهِ، ولا الجهادُ في سبيلِ اللهِ؟ قال: «ولا الجهادُ في سبيلِ اللهِ، إلا رجلٌ خرج بنفسِه ومالِه، فلم يرجِعْ من ذلك بشيءٍ».\n رواه البخاري📘''',
+  };
+
   @override
-  Widget build(BuildContext context) {
-    return GetBuilder<CalendarController>(
-      builder: (controller) => Scaffold(
-        appBar: AppBar(
-          title: Text('📅 التقويم'),
-          backgroundColor: Colors.green,
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.today),
-              tooltip: 'العودة لليوم',
-              onPressed: controller.resetToToday,
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            // 🔄 التنقل بين الأشهر
-            Container(
-              margin: EdgeInsets.all(12),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.green[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: controller.previousMonth,
-                  ),
-                  Text(
-                    controller.monthYear,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    onPressed: controller.nextMonth,
-                  ),
-                ],
-              ),
-            ),
+  void onInit() {
+    super.onInit();
+    updateMonthInfo();
+  }
 
-            // 🖼️ صورة الشهر أو الحديث
-            GestureDetector(
-              onTap: controller.toggleImage,
-              child: Container(
-                height: 150,
-                margin: EdgeInsets.symmetric(vertical: 8),
-                child: Image.asset(
-                  controller.showHadith
-                      ? controller.hadithForMonth
-                      : controller.imageForMonth,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+  void updateMonthInfo() {
+    daysInMonth.value = currentDate.value.lengthOfMonth;
 
-            // 📆 جدول الأيام
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                children: [
-                  // أيام الأسبوع
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: controller.weekDays
-                        .map(
-                          (day) => Expanded(
-                            child: Center(
-                              child: Text(
-                                day,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  SizedBox(height: 8),
+    HijriCalendar firstDay = HijriCalendar()
+      ..hYear = currentDate.value.hYear
+      ..hMonth = currentDate.value.hMonth
+      ..hDay = 1;
+    offsetDays.value = (firstDay.weekDay() % 7);
+  }
 
-                  // أيام الشهر
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: controller.daysGrid.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
-                    ),
-                    itemBuilder: (context, index) {
-                      final date = controller.daysGrid[index];
-                      final isToday = controller.isToday(date);
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: date.year == 0
-                              ? Colors.transparent
-                              : isToday
-                              ? Colors.red[200]
-                              : Colors.green[50],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        alignment: Alignment.center,
-                        child: date.year == 0 ? null : Text('${date.day}'),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void nextMonth() {
+    int m = currentDate.value.hMonth + 1;
+    int y = currentDate.value.hYear;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+    currentDate.value = HijriCalendar()
+      ..hYear = y
+      ..hMonth = m
+      ..hDay = 1;
+    updateMonthInfo();
+  }
+
+  void previousMonth() {
+    int m = currentDate.value.hMonth - 1;
+    int y = currentDate.value.hYear;
+    if (m < 1) {
+      m = 12;
+      y -= 1;
+    }
+    currentDate.value = HijriCalendar()
+      ..hYear = y
+      ..hMonth = m
+      ..hDay = 1;
+    updateMonthInfo();
+  }
+
+  void goToToday() {
+    currentDate.value = HijriCalendar.now();
+    updateMonthInfo();
+  }
+
+  bool isToday(int day) {
+    final today = HijriCalendar.now();
+    return currentDate.value.hYear == today.hYear &&
+        currentDate.value.hMonth == today.hMonth &&
+        day == today.hDay;
   }
 }

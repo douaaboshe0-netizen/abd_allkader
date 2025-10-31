@@ -10,7 +10,7 @@ import '../views/task_screen.dart';
 import '../views/setting_screen.dart';
 import '../views/record_screen.dart';
 import '../views/week_schedule_screen.dart';
-// import '../views/calendar_screen.dart';
+import '../views/calendar_screen.dart';
 
 import '../bindings/splash_binding.dart';
 import '../bindings/login_binding.dart';
@@ -18,7 +18,7 @@ import '../bindings/student_binding.dart';
 import '../bindings/note_binding.dart';
 import '../bindings/task_binding.dart';
 import '../bindings/record_binding.dart';
-// import '../bindings/calendar_binding.dart';
+import '../bindings/calendar_binding.dart';
 
 import '../middlewares/auth_middleware.dart';
 
@@ -73,10 +73,10 @@ class AppPages {
       binding: RecordBinding(),
     ),
     GetPage(name: Routes.weekPage, page: () => const WeekScheduleScreen()),
-    // GetPage(
-    //   name: Routes.calendarPage,
-    //   page: () => CalendarScreen(),
-    //   binding: CalendarBinding(),
-    // ),
+    GetPage(
+      name: Routes.calendarPage,
+      page: () => CalendarScreen(),
+      // binding: CalendarBinding(),
+    ),
   ];
 }

@@ -236,7 +236,7 @@ class StudentScreen extends StatelessWidget {
                   child: buildButton(
                     label: 'التقويم',
                     imagePath: 'images/date.jpg',
-                    onTap: () => Get.toNamed('/calendarPage'),
+                    onTap: () => Get.toNamed(Routes.calendarPage),
                   ),
                 ),
                 Expanded(
